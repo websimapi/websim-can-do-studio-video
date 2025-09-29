@@ -1,6 +1,6 @@
 import { jsxDEV } from "react/jsx-dev-runtime";
-import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Img, Audio, staticFile, Sequence } from "remotion";
+import React, { useState, useEffect } from "react";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Img, Audio, staticFile, Sequence, delayRender, continueRender } from "remotion";
 const SHAKE_START = 0;
 const SHAKE_END = 90;
 const TILT_START = 90;
@@ -111,8 +111,8 @@ const LiquidShaderEffect = () => {
           backgroundColor: layer.color,
           mixBlendMode: "screen",
           // Achieve vibrant overlapping colors
-          filter: "blur(40px)",
-          // Increased blur
+          filter: "blur(20px)",
+          // Reduced blur for mobile compatibility
           transform: `
                                 translateY(${translateY}px) 
                                 scaleX(${scaleX}) 
@@ -139,13 +139,26 @@ const LiquidShaderEffect = () => {
   });
 };
 const CanDoComposition = () => {
+  const [handle] = useState(() => delayRender());
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      console.log("Image asset loaded.");
+      continueRender(handle);
+    };
+    img.onerror = (e) => {
+      console.error("Failed to load image asset:", e);
+      continueRender(handle);
+    };
+    img.src = staticFile("can_do_can.png");
+  }, [handle]);
   const frame = useCurrentFrame();
   const shakeVolume = interpolate(frame, [0, 10, 80, 90], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const jingleVolume = interpolate(frame, [0, 10, 45, 60], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { backgroundColor: BACKGROUND_COLOR }, children: [
     /* @__PURE__ */ jsxDEV(LiquidShaderEffect, {}, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 151,
+      lineNumber: 169,
       columnNumber: 13
     }),
     /* @__PURE__ */ jsxDEV(
@@ -159,7 +172,7 @@ const CanDoComposition = () => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 154,
+        lineNumber: 172,
         columnNumber: 13
       }
     ),
@@ -174,22 +187,22 @@ const CanDoComposition = () => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 163,
+        lineNumber: 181,
         columnNumber: 18
       }
     ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 162,
+      lineNumber: 180,
       columnNumber: 13
     }),
     /* @__PURE__ */ jsxDEV(CanComponent, {}, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 171,
+      lineNumber: 189,
       columnNumber: 13
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 148,
+    lineNumber: 166,
     columnNumber: 9
   });
 };
